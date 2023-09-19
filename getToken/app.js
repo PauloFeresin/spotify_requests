@@ -8,7 +8,7 @@ const fs = require("fs");
 const app = express();
 const port = 3000;
 
-// Function to save the generated aut codes in a .env file
+// Função para salvar os auth codes em um .env
 function saveAuthCodes(accessToken, refreshToken) {
   const data = {
     ACCESSTOKEN: accessToken,
@@ -26,7 +26,7 @@ function saveAuthCodes(accessToken, refreshToken) {
   });
 }
 
-// Define routes here
+// Rotas
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
@@ -36,7 +36,7 @@ app.get("/login", (req, res) => {
   const client_id = process.env.CLIENTID;
   const redirect_uri = "http://localhost:3000/callback";
   const scopes =
-    "playlist-modify-public playlist-read-private playlist-modify-private"; // Define your desired scopes
+    "playlist-modify-public playlist-read-private playlist-modify-private"; // Scopes autorizados
 
   const spotifyAuthUrl = `https://accounts.spotify.com/authorize?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=${scopes}`;
 
@@ -45,11 +45,11 @@ app.get("/login", (req, res) => {
 
 app.get("/callback", async (req, res) => {
   const { code } = req.query;
-  const redirect_uri = "http://localhost:3000/callback"; // Ensure this matches your Spotify app settings
+  const redirect_uri = "http://localhost:3000/callback"; 
   const client_id = process.env.CLIENTID;
   const client_secret = process.env.CLIENTSECRET;
 
-  // Prepare the data to send in the POST request
+  // Prepara o parametro para enviar no request
   const authData = {
     grant_type: "authorization_code",
     code: code,
@@ -59,7 +59,7 @@ app.get("/callback", async (req, res) => {
   };
 
   try {
-    // Make a POST request to exchange the code for an access token
+    // POST request para receber o token
     const response = await axios.post(
       "https://accounts.spotify.com/api/token",
       null,
@@ -74,7 +74,7 @@ app.get("/callback", async (req, res) => {
     const { access_token, refresh_token } = response.data;
     saveAuthCodes(access_token, refresh_token);
 
-    // Redirect the user or perform other actions
+    // Redirecionamento simples para informar o usuario
     res.send("Authentication successful! You can now use the access token.");
   } catch (error) {
     console.error("Error exchanging code for access token:", error);
